@@ -1,0 +1,6 @@
+{
+  "status": "using_pretrained",
+  "base_model": "google/pegasus-xsum",
+  "training_samples": 0,
+  "training_performed": false
+}
