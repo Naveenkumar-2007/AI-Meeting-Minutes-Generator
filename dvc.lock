@@ -1,0 +1,78 @@
+schema: '2.0'
+stages:
+  transcribe:
+    cmd: python scripts/transcribe_batch.py --input data/raw --output data/transcribed
+      --model base
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1
+    - path: scripts/transcribe_batch.py
+      hash: md5
+      md5: f3ade829e6763b93704711de492f85db
+      size: 2990
+    - path: src/components/transcription.py
+      hash: md5
+      md5: 24f8beae2286787d249670b1bdd37c9e
+      size: 5257
+    outs:
+    - path: data/transcribed
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1
+  train:
+    cmd: python scripts/train_summarizer.py --data data/transcribed --output models/summarizer
+      --epochs 3
+    deps:
+    - path: data/transcribed
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1
+    - path: scripts/train_summarizer.py
+      hash: md5
+      md5: b07218a42f08681d5c36f696d6d6ea2a
+      size: 5255
+    - path: src/pipeline/training_pipeline.py
+      hash: md5
+      md5: 7becb1564b16fd99416712198000cc61
+      size: 8257
+    outs:
+    - path: metrics/summarization_metrics.json
+      hash: md5
+      md5: 4aa8d05dec92cd2f7d376f7e23c04824
+      size: 134
+    - path: models/summarizer
+      hash: md5
+      md5: 0e2d0e45c44db897503cd1dc2ddc684f.dir
+      size: 147
+      nfiles: 1
+  analyze:
+    cmd: python scripts/analyze_batch.py --input data/transcribed --output data/processed
+    deps:
+    - path: data/transcribed
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1
+    - path: scripts/analyze_batch.py
+      hash: md5
+      md5: ac1bbadd5062ebdb5b2c4cabf3db0cd3
+      size: 4718
+    - path: src/components/sentiment_analysis.py
+      hash: md5
+      md5: e3c4c337a01aa9570b3416139afd5b74
+      size: 7203
+    - path: src/components/summarization.py
+      hash: md5
+      md5: 316c68057539f4f067d9d6913fb6ce07
+      size: 8539
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 6ffbaaad7b4ac6e1afabed19a80b2560.dir
+      size: 0
+      nfiles: 1

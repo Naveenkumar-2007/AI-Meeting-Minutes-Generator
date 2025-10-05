@@ -1,0 +1,37 @@
+stages:
+  # Stage 1: Transcribe audio files to text
+  transcribe:
+    cmd: python scripts/transcribe_batch.py --input data/raw --output data/transcribed --model base
+    deps:
+      - data/raw
+      - scripts/transcribe_batch.py
+      - src/components/transcription.py
+    outs:
+      - data/transcribed
+    desc: "Transcribe all audio files in data/raw using Whisper"
+      
+  # Stage 2: Train/fine-tune summarization model (optional)
+  train:
+    cmd: python scripts/train_summarizer.py --data data/transcribed --output models/summarizer --epochs 3
+    deps:
+      - data/transcribed
+      - scripts/train_summarizer.py
+      - src/pipeline/training_pipeline.py
+    outs:
+      - models/summarizer
+    metrics:
+      - metrics/summarization_metrics.json:
+          cache: false
+    desc: "Fine-tune summarization model (skipped if < 10 samples)"
+          
+  # Stage 3: Generate summaries and analysis
+  analyze:
+    cmd: python scripts/analyze_batch.py --input data/transcribed --output data/processed
+    deps:
+      - data/transcribed
+      - scripts/analyze_batch.py
+      - src/components/summarization.py
+      - src/components/sentiment_analysis.py
+    outs:
+      - data/processed
+    desc: "Generate summaries, action items, and sentiment analysis"
